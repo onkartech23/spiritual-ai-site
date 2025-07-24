@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Spiritual AI Companion</title>
 
-  <!-- ======= BASIC STYLES ======= -->
   <style>
     :root{
       --bg:#f4f5f7;
@@ -18,10 +17,10 @@
       --card-shadow:0 6px 18px rgba(0,0,0,.08);
       --radius:14px;
     }
-    *{ box-sizing:border-box; }
+    *{box-sizing:border-box;}
     body{
       margin:0;
-      font-family: "Inter", system-ui, -apple-system, sans-serif;
+      font-family:"Inter", system-ui, -apple-system, sans-serif;
       color:var(--text);
       background:var(--bg);
     }
@@ -31,79 +30,40 @@
       padding:34px 16px 20px;
       text-align:center;
     }
-    h1{
-      margin:0 0 6px;
-      font-size:2.4rem;
-      font-weight:700;
-    }
+    h1{margin:0 0 6px;font-size:2.4rem;font-weight:700;}
     header p{
-      max-width:680px;
-      margin:0 auto;
-      color:#cbd5e1;
-      line-height:1.4;
-      font-size:1.05rem;
+      max-width:680px;margin:0 auto;color:#cbd5e1;line-height:1.4;font-size:1.05rem;
     }
 
     .cta-bar{
-      margin:36px auto 28px;
-      text-align:center;
+      margin:36px auto 28px;text-align:center;
     }
     .btn{
-      display:inline-block;
-      margin:8px 10px;
-      padding:13px 28px;
-      background:var(--btn);
-      color:#fff;
-      border-radius:10px;
-      text-decoration:none;
-      font-size:16px;
-      font-weight:500;
-      cursor:pointer;
-      transition:background .18s;
+      display:inline-block;margin:8px 10px;padding:13px 28px;
+      background:var(--btn);color:#fff;border-radius:10px;text-decoration:none;
+      font-size:16px;font-weight:500;cursor:pointer;transition:background .18s;
     }
-    .btn:hover{ background:var(--btn-hover); }
+    .btn:hover{background:var(--btn-hover);}
 
     .features{
-      max-width:1080px;
-      margin:0 auto 90px;
-      display:grid;
-      grid-template-columns:repeat(auto-fill,minmax(270px,1fr));
-      gap:26px;
-      padding:0 20px;
+      max-width:1080px;margin:0 auto 90px;
+      display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));
+      gap:26px;padding:0 20px;
     }
     .card{
-      background:var(--card-bg);
-      box-shadow:var(--card-shadow);
-      border-radius:var(--radius);
-      padding:26px 24px 28px;
-      text-align:left;
+      background:var(--card-bg);box-shadow:var(--card-shadow);
+      border-radius:var(--radius);padding:26px 24px 28px;text-align:left;
     }
-    .card h3{
-      margin:0 0 14px;
-      font-size:20px;
-    }
-    .card p{
-      margin:0;
-      color:var(--sub);
-      line-height:1.5;
-      font-size:15px;
-    }
+    .card h3{margin:0 0 14px;font-size:20px;}
+    .card p{margin:0;color:var(--sub);line-height:1.5;font-size:15px;}
 
-    footer{
-      text-align:center;
-      padding:32px 0 52px;
-      color:#9ca3af;
-      font-size:13px;
-    }
+    footer{text-align:center;padding:32px 0 52px;color:#9ca3af;font-size:13px;}
 
-    /* ===== Hide default Voiceflow launcher bubble ===== */
-    .vf-chat-launcher,
-    [data-cy="chat-launcher"],
-    [data-testid="launcher"],
-    div[id^="vf-launcher"]{
-      display:none !important;
-      visibility:hidden !important;
-      opacity:0 !important;
+    /* Hide default Voiceflow launcher bubble (various selectors) */
+    .vf-chat-launcher, [data-cy="chat-launcher"], [data-testid="launcher"],
+    div[id^="vf-launcher"], button[aria-label*="Test your agent"]{
+      display:none !important; visibility:hidden !important; opacity:0 !important;
+      pointer-events:none !important;
     }
   </style>
 </head>
@@ -115,9 +75,7 @@
   </header>
 
   <div class="cta-bar">
-    <!-- Chat button (we hook this to the Voiceflow API) -->
-    <a id="chatBtn" class="btn" href="#">Chat Now</a>
-    <!-- Update these links to real WhatsApp / Telegram bot later -->
+    <a id="chatBtn" class="btn" href="javascript:void(0);">Chat Now</a>
     <a class="btn" href="https://wa.me/34671653842" target="_blank" rel="noopener">WhatsApp</a>
     <a class="btn" href="https://t.me/YOUR_TELEGRAM_BOT" target="_blank" rel="noopener">Telegram</a>
   </div>
@@ -145,41 +103,32 @@
     © 2025 Spiritual AI · All rights reserved
   </footer>
 
-  <!-- ===================== Voiceflow Widget Loader ===================== -->
+  <!-- Voiceflow Widget Loader -->
   <script>
-    // Store the Voiceflow API instance and readiness flag
+    // We'll store the API returned by voiceflow.chat.load()
     let vfAPI = null;
 
-    // Open / toggle helpers
-    function openChat(){
-      if (vfAPI) {
-        vfAPI.open();
-      } else {
-        // If user clicks before script loads, retry shortly
-        setTimeout(openChat, 400);
-      }
-    }
-    function toggleChat(){
-      if (!vfAPI){ setTimeout(toggleChat, 400); return; }
-      const isOpen = vfAPI.isOpen ? vfAPI.isOpen() : false;
-      if (isOpen && vfAPI.close) vfAPI.close();
-      else if (vfAPI.open) vfAPI.open();
+    // Attach click handler AFTER load so it always works
+    function attachChatHandler(api){
+      vfAPI = api;
+      const btn = document.getElementById('chatBtn');
+      btn.addEventListener('click', function(e){
+        e.preventDefault();
+        if (!vfAPI) return;
+        // Toggle window
+        const isOpen = vfAPI.isOpen ? vfAPI.isOpen() : false;
+        if (isOpen && vfAPI.close) vfAPI.close();
+        else if (vfAPI.open) vfAPI.open();
+      });
     }
 
-    // Attach to button
-    document.getElementById('chatBtn').addEventListener('click', function(e){
-      e.preventDefault();
-      openChat();
-    });
-
-    // Dynamically inject the Voiceflow script
+    // Inject widget script
     (function(d, t){
       const s = d.createElement(t);
       s.src  = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
       s.type = "text/javascript";
       s.async = true;
       s.onload = function(){
-        // Load Voiceflow widget with config and custom theme
         window.voiceflow.chat.load(
           {
             verify:   { projectID: '6872205abf484647c16ff114' },
@@ -188,24 +137,17 @@
             voice:    { url: 'https://runtime-api.voiceflow.com' }
           },
           {
-            // THEME OVERRIDES (you can remove this block to use dashboard settings)
             theme: {
               primary: '#334155',
               radius: 14,
-              launcher: {
-                // We hide it anyway, but ensure false if available
-                show: false
-              },
-              chatWindow: {
-                width: 420,
-                rounded: true
-              }
+              launcher: { show: false },
+              chatWindow: { width: 420, rounded: true }
             }
           }
         ).then(api=>{
-          vfAPI = api;
-          // Hide the launcher programmatically if the API allows
+          // Hide launcher bubble if any
           if (api.hideLauncher) api.hideLauncher();
+          attachChatHandler(api);
         }).catch(err=>{
           console.error('Voiceflow load error:', err);
         });
@@ -213,7 +155,5 @@
       d.body.appendChild(s);
     })(document,'script');
   </script>
-  <!-- =================== / Voiceflow widget end =================== -->
-
 </body>
 </html>
