@@ -18,26 +18,12 @@
       --radius:14px;
     }
     *{box-sizing:border-box;}
-    body{
-      margin:0;
-      font-family:"Inter", system-ui, -apple-system, sans-serif;
-      color:var(--text);
-      background:var(--bg);
-    }
-    header{
-      background:var(--dark);
-      color:#fff;
-      padding:34px 16px 20px;
-      text-align:center;
-    }
+    body{margin:0;font-family:"Inter",system-ui,-apple-system,sans-serif;color:var(--text);background:var(--bg);}
+    header{background:var(--dark);color:#fff;padding:34px 16px 20px;text-align:center;}
     h1{margin:0 0 6px;font-size:2.4rem;font-weight:700;}
-    header p{
-      max-width:680px;margin:0 auto;color:#cbd5e1;line-height:1.4;font-size:1.05rem;
-    }
+    header p{max-width:690px;margin:0 auto;color:#cbd5e1;line-height:1.45;font-size:1.05rem;}
 
-    .cta-bar{
-      margin:36px auto 28px;text-align:center;
-    }
+    .cta-bar{margin:36px auto 28px;text-align:center;}
     .btn{
       display:inline-block;margin:8px 10px;padding:13px 28px;
       background:var(--btn);color:#fff;border-radius:10px;text-decoration:none;
@@ -59,9 +45,12 @@
 
     footer{text-align:center;padding:32px 0 52px;color:#9ca3af;font-size:13px;}
 
-    /* Hide default Voiceflow launcher bubble (various selectors) */
-    .vf-chat-launcher, [data-cy="chat-launcher"], [data-testid="launcher"],
-    div[id^="vf-launcher"], button[aria-label*="Test your agent"]{
+    /* Force-hide default Voiceflow launcher bubble if it still appears */
+    .vf-chat-launcher,
+    [data-cy="chat-launcher"],
+    [data-testid="launcher"],
+    div[id^="vf-launcher"],
+    button[aria-label*="Test your agent"]{
       display:none !important; visibility:hidden !important; opacity:0 !important;
       pointer-events:none !important;
     }
@@ -103,27 +92,29 @@
     © 2025 Spiritual AI · All rights reserved
   </footer>
 
-  <!-- Voiceflow Widget Loader -->
+  <!-- Voiceflow widget loader -->
   <script>
-    // We'll store the API returned by voiceflow.chat.load()
-    let vfAPI = null;
+    // Global ref so the click handler can reach it
+    window._vfAPI = null;
 
-    // Attach click handler AFTER load so it always works
-    function attachChatHandler(api){
-      vfAPI = api;
-      const btn = document.getElementById('chatBtn');
-      btn.addEventListener('click', function(e){
-        e.preventDefault();
-        if (!vfAPI) return;
-        // Toggle window
-        const isOpen = vfAPI.isOpen ? vfAPI.isOpen() : false;
-        if (isOpen && vfAPI.close) vfAPI.close();
-        else if (vfAPI.open) vfAPI.open();
-      });
+    // Chat button logic
+    function toggleChat(){
+      if(!window._vfAPI){ 
+        // fallback: open Voiceflow hosted chat
+        window.location.href = 'https://chat.voiceflow.com/?projectID=6872205abf484647c16ff114';
+        return;
+      }
+      const isOpen = window._vfAPI.isOpen ? window._vfAPI.isOpen() : false;
+      if(isOpen && window._vfAPI.close) window._vfAPI.close();
+      else if(window._vfAPI.open) window._vfAPI.open();
     }
 
+    document.addEventListener('DOMContentLoaded', ()=>{
+      document.getElementById('chatBtn').addEventListener('click', toggleChat);
+    });
+
     // Inject widget script
-    (function(d, t){
+    (function(d,t){
       const s = d.createElement(t);
       s.src  = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
       s.type = "text/javascript";
@@ -131,26 +122,23 @@
       s.onload = function(){
         window.voiceflow.chat.load(
           {
-            verify:   { projectID: '6872205abf484647c16ff114' },
-            url:      'https://general-runtime.voiceflow.com',
+            verify:{ projectID:'6872205abf484647c16ff114' },
+            url:'https://general-runtime.voiceflow.com',
             versionID:'production',
-            voice:    { url: 'https://runtime-api.voiceflow.com' }
+            voice:{ url:'https://runtime-api.voiceflow.com' }
           },
           {
-            theme: {
-              primary: '#334155',
-              radius: 14,
-              launcher: { show: false },
-              chatWindow: { width: 420, rounded: true }
+            theme:{
+              primary:'#334155',
+              radius:14,
+              launcher:{ show:false },       // <- hide bubble
+              chatWindow:{ width:420, rounded:true }
             }
           }
         ).then(api=>{
-          // Hide launcher bubble if any
-          if (api.hideLauncher) api.hideLauncher();
-          attachChatHandler(api);
-        }).catch(err=>{
-          console.error('Voiceflow load error:', err);
-        });
+          window._vfAPI = api;
+          api.hideLauncher?.();             // double hide
+        }).catch(err=>console.error('VF load error', err));
       };
       d.body.appendChild(s);
     })(document,'script');
