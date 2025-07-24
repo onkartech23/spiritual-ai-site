@@ -56,11 +56,18 @@
     }
     .btn:hover{opacity:.85;}
 
-    /* Hide Voiceflow default launcher bubble & footer */
-    .vf-chat-launcher,
-    [data-cy="chat-launcher"]{
+    /* ===== Hide Voiceflow default launcher & footer ===== */
+    /* Classic launcher class */
+    .vf-chat-launcher, [data-cy="chat-launcher"]{
       display:none !important;
     }
+    /* New “Test your agent” debug/launcher */
+    [class*="vf-debug-launcher"],
+    [data-testid="launcher"],
+    div[id^="vf-launcher"]{
+      display:none !important;
+    }
+    /* Footer “Powered by Voiceflow” */
     .vf-footer__powered-by{
       display:none !important;
     }
@@ -83,24 +90,26 @@
 
   <!-- Voiceflow Widget Loader -->
   <script type="text/javascript">
-    let vfAPI = null;
-
-    function openBot(){
-      if (vfAPI && vfAPI.open){
-        vfAPI.open();
-      } else {
-        setTimeout(openBot, 300);
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const chatBtn = document.getElementById('chatBtn');
-      chatBtn.addEventListener('click', openBot);
-    });
-
     (function(d, t){
-      var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
-      v.onload = function(){
+      const s = d.createElement(t);
+      const prior = d.getElementsByTagName(t)[0];
+
+      let vfAPI = null;
+
+      // Attach click listener early
+      d.addEventListener('DOMContentLoaded', () => {
+        const chatBtn = d.getElementById('chatBtn');
+        chatBtn.addEventListener('click', () => {
+          if (vfAPI && vfAPI.open) {
+            vfAPI.open();
+          } else {
+            // Try a bit later if widget is still loading
+            setTimeout(() => vfAPI && vfAPI.open && vfAPI.open(), 500);
+          }
+        });
+      });
+
+      s.onload = function(){
         window.voiceflow.chat.load(
           {
             verify: { projectID: '6872205abf484647c16ff114' },
@@ -116,12 +125,22 @@
           }
         ).then(api => {
           vfAPI = api;
-          if (api.hideLauncher) api.hideLauncher();
+
+          // Hide default launcher if exposed
+          try { api.hideLauncher && api.hideLauncher(); } catch(e){}
+
+          // Extra DOM hide (in case)
+          setTimeout(() => {
+            const debugBtn = document.querySelector('[data-testid="launcher"]') ||
+                             document.querySelector('.vf-chat-launcher');
+            if (debugBtn) debugBtn.style.display = 'none';
+          }, 1000);
         });
       };
-      v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
-      v.type = "text/javascript";
-      s.parentNode.insertBefore(v, s);
+
+      s.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
+      s.type = "text/javascript";
+      prior.parentNode.insertBefore(s, prior);
     })(document, 'script');
   </script>
 </body>
