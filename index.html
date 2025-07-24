@@ -1,65 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Spiritual AI Companion</title>
-  <style>
-    body{margin:0;font-family:Arial,sans-serif;background:#f4f5f7;text-align:center;}
-    header{background:#1f2937;color:#fff;padding:30px 0 10px;}
-    h1{margin:0;font-size:2rem;}
-    p{margin:6px 0 0;color:#cbd5e1;}
 
-    .button-group{margin:40px 0;}
+  <style>
+    body{
+      margin:0;
+      font-family:Arial, sans-serif;
+      background:#f4f5f7;
+      text-align:center;
+    }
+    header{
+      background:#1f2937;
+      color:#fff;
+      padding:30px 0 10px;
+    }
+    h1{ margin:0; font-size:2rem; }
+    p{ margin:6px 0 0; color:#cbd5e1; }
+
+    .button-group{ margin:40px 0; }
     .button{
-      display:inline-block;margin:10px;padding:12px 25px;background:#334155;color:#fff;
-      border:none;border-radius:8px;font-size:16px;text-decoration:none;cursor:pointer;
+      display:inline-block;
+      margin:10px;
+      padding:12px 25px;
+      background:#334155;
+      color:#fff;
+      border:none;
+      border-radius:8px;
+      font-size:16px;
+      text-decoration:none;
+      cursor:pointer;
       transition:background .2s;
     }
-    .button:hover{background:#475569;}
+    .button:hover{ background:#475569; }
   </style>
 </head>
 <body>
 
-<header>
-  <h1>✨ Spiritual AI Companion</h1>
-  <p>Receive Gita wisdom, Yoga advice, and daily spiritual guidance</p>
-</header>
+  <header>
+    <h1>✨ Spiritual AI Companion</h1>
+    <p>Receive Gita wisdom, Yoga advice, and daily spiritual guidance</p>
+  </header>
 
-<div class="button-group">
-  <a href="#" class="button" onclick="openBot()">Chat Now</a>
-  <a href="https://wa.me/34671653842" class="button" target="_blank">WhatsApp</a>
-  <a href="https://t.me/YOUR_TELEGRAM_BOT" class="button" target="_blank">Telegram</a>
-</div>
+  <div class="button-group">
+    <a href="#" class="button" onclick="openBot()">Chat Now</a>
+    <a href="https://wa.me/34671653842" class="button" target="_blank">WhatsApp</a>
+    <a href="https://t.me/YOUR_TELEGRAM_BOT" class="button" target="_blank">Telegram</a>
+  </div>
 
-<!-- ================= Voiceflow widget script ================= -->
-<script type="text/javascript">
-  let vfReady=false;
-  function openBot(){
-    if(vfReady && window.voiceflow && window.voiceflow.chat){
-      window.voiceflow.chat.open();
-    }else{
-      setTimeout(openBot,500);
+  <!-- =====================  Voiceflow widget  ===================== -->
+  <!-- Add code before closing </body> tag -->
+  <script type="text/javascript">
+    // small helper so the button can open the widget once it's ready
+    let vfReady = false;
+    function openBot(){
+      if (vfReady && window.voiceflow && window.voiceflow.chat) {
+        window.voiceflow.chat.open();
+      } else {
+        // In case user clicks fast, wait a bit then try again
+        setTimeout(openBot, 500);
+      }
     }
-  }
 
-  (function(d,t){
-    var v=d.createElement(t), s=d.getElementsByTagName(t)[0];
-    v.onload=function(){
-      window.voiceflow.chat.load({
-        verify:   { projectID:'6872205abf484647c16ff114' },
-        url:      'https://general-runtime.voiceflow.com',
-        versionID:'production',
-        voice:    { url:'https://runtime-api.voiceflow.com' }
-      });
-      vfReady=true;
-    };
-    v.src="https://cdn.voiceflow.com/widget-next/bundle.mjs";
-    v.type="text/javascript";       /* try "module" if it fails */
-    s.parentNode.insertBefore(v,s);
-  })(document,'script');
-</script>
-<!-- =========================================================== -->
+    (function(d, t) {
+      var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+      v.onload = function() {
+        window.voiceflow.chat.load({
+          verify: { projectID: '6872205abf484647c16ff114' },
+          url: 'https://general-runtime.voiceflow.com',
+          versionID: 'production',
+          voice: { url: 'https://runtime-api.voiceflow.com' }
+        });
+        vfReady = true;
+      };
+      v.src  = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
+      v.type = "text/javascript";
+      s.parentNode.insertBefore(v, s);
+    })(document, 'script');
+  </script>
+  <!-- =================== / Voiceflow widget end =================== -->
 
 </body>
 </html>
