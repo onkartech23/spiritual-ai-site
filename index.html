@@ -45,7 +45,7 @@
 
     footer{text-align:center;padding:32px 0 52px;color:#9ca3af;font-size:13px;}
 
-    /* Force-hide default Voiceflow launcher bubble if it still appears */
+    /* Hide default Voiceflow launcher bubble if it still appears */
     .vf-chat-launcher,
     [data-cy="chat-launcher"],
     [data-testid="launcher"],
@@ -57,7 +57,6 @@
   </style>
 </head>
 <body>
-
   <header>
     <h1>✨ Spiritual AI Companion</h1>
     <p>Receive Gita wisdom, Yoga advice, and daily spiritual guidance — tailored to your mood.</p>
@@ -92,34 +91,36 @@
     © 2025 Spiritual AI · All rights reserved
   </footer>
 
-  <!-- Voiceflow widget loader -->
+  <!-- Voiceflow widget -->
   <script>
-    // Global ref so the click handler can reach it
+    // store API when widget loads
     window._vfAPI = null;
+    let _vfReady = false;
+    let _vfQueue = [];  // calls made before ready
 
-    // Chat button logic
+    // Chat button toggles widget
     function toggleChat(){
-      if(!window._vfAPI){ 
-        // fallback: open Voiceflow hosted chat
-        window.location.href = 'https://chat.voiceflow.com/?projectID=6872205abf484647c16ff114';
-        return;
+      if(_vfReady && window._vfAPI){
+        const open = window._vfAPI.isOpen ? window._vfAPI.isOpen() : false;
+        if(open && window._vfAPI.close) window._vfAPI.close();
+        else if(window._vfAPI.open) window._vfAPI.open();
+      }else{
+        // queue the open request until ready
+        _vfQueue.push(toggleChat);
       }
-      const isOpen = window._vfAPI.isOpen ? window._vfAPI.isOpen() : false;
-      if(isOpen && window._vfAPI.close) window._vfAPI.close();
-      else if(window._vfAPI.open) window._vfAPI.open();
     }
 
     document.addEventListener('DOMContentLoaded', ()=>{
       document.getElementById('chatBtn').addEventListener('click', toggleChat);
     });
 
-    // Inject widget script
+    // load widget script
     (function(d,t){
-      const s = d.createElement(t);
-      s.src  = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
-      s.type = "text/javascript";
-      s.async = true;
-      s.onload = function(){
+      const s=d.createElement(t);
+      s.src="https://cdn.voiceflow.com/widget-next/bundle.mjs?v=2"; // cache-bust
+      s.type="text/javascript";
+      s.async=true;
+      s.onload=function(){
         window.voiceflow.chat.load(
           {
             verify:{ projectID:'6872205abf484647c16ff114' },
@@ -131,14 +132,18 @@
             theme:{
               primary:'#334155',
               radius:14,
-              launcher:{ show:false },       // <- hide bubble
+              launcher:{ show:false },
               chatWindow:{ width:420, rounded:true }
             }
           }
         ).then(api=>{
           window._vfAPI = api;
-          api.hideLauncher?.();             // double hide
-        }).catch(err=>console.error('VF load error', err));
+          _vfReady = true;
+          api.hideLauncher?.();
+
+          // run queued calls (e.g., someone clicked before ready)
+          while(_vfQueue.length){ const fn=_vfQueue.shift(); try{fn();}catch(e){} }
+        }).catch(err=>console.error('VF load error',err));
       };
       d.body.appendChild(s);
     })(document,'script');
