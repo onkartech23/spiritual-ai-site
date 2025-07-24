@@ -5,123 +5,215 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Spiritual AI Companion</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <!-- ======= BASIC STYLES ======= -->
   <style>
     :root{
-      --bg:#f4f6f8; --header:#111827; --accent:#334155; --accent-hover:#475569;
-      --text-light:#e5e7eb; --text-dark:#111827; --max:1000px; --radius:10px;
-      --font:'Poppins', Arial, sans-serif;
+      --bg:#f4f5f7;
+      --dark:#1f2937;
+      --text:#111827;
+      --sub:#6b7280;
+      --btn:#334155;
+      --btn-hover:#475569;
+      --card-bg:#ffffff;
+      --card-shadow:0 6px 18px rgba(0,0,0,.08);
+      --radius:14px;
     }
-    *{box-sizing:border-box;}
-    body{margin:0;background:var(--bg);color:var(--text-dark);font-family:var(--font);}
-    header{background:var(--header);color:#fff;text-align:center;padding:50px 16px 40px;}
-    header h1{margin:0 0 10px;font-size:2.2rem;line-height:1.2;}
-    header p{margin:0;font-size:1rem;opacity:.85;max-width:600px;margin-inline:auto;}
-    main{max-width:var(--max);margin:0 auto;padding:40px 16px 80px;}
-    .button-group{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin:40px 0 60px;}
-    .button{
-      display:inline-block;padding:13px 28px;background:var(--accent);color:#fff;
-      border:none;border-radius:var(--radius);font-size:16px;text-decoration:none;
-      box-shadow:0 2px 6px rgba(0,0,0,.1);transition:background .2s;cursor:pointer;
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: "Inter", system-ui, -apple-system, sans-serif;
+      color:var(--text);
+      background:var(--bg);
     }
-    .button:hover{background:var(--accent-hover);}
-    .features{display:grid;gap:24px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin:0 auto;max-width:var(--max);}
-    .card{background:#fff;padding:24px 22px;border-radius:14px;box-shadow:0 2px 6px rgba(0,0,0,.08);text-align:left;}
-    .card h3{margin:0 0 8px;font-size:1.1rem;color:var(--accent);}
-    .card p{margin:0;line-height:1.5;font-size:.9rem;opacity:.8;}
-    footer{text-align:center;padding:32px 16px;font-size:.8rem;color:#6b7280;}
-    /* Hide the default Voiceflow launcher bubble */
-    .vf-chat-launcher,[data-cy="chat-launcher"],[data-testid="launcher"],div[id^="vf-launcher"]{display:none!important;}
-    @media(max-width:480px){header h1{font-size:1.7rem}.button{width:100%;max-width:280px}}
+    header{
+      background:var(--dark);
+      color:#fff;
+      padding:34px 16px 20px;
+      text-align:center;
+    }
+    h1{
+      margin:0 0 6px;
+      font-size:2.4rem;
+      font-weight:700;
+    }
+    header p{
+      max-width:680px;
+      margin:0 auto;
+      color:#cbd5e1;
+      line-height:1.4;
+      font-size:1.05rem;
+    }
+
+    .cta-bar{
+      margin:36px auto 28px;
+      text-align:center;
+    }
+    .btn{
+      display:inline-block;
+      margin:8px 10px;
+      padding:13px 28px;
+      background:var(--btn);
+      color:#fff;
+      border-radius:10px;
+      text-decoration:none;
+      font-size:16px;
+      font-weight:500;
+      cursor:pointer;
+      transition:background .18s;
+    }
+    .btn:hover{ background:var(--btn-hover); }
+
+    .features{
+      max-width:1080px;
+      margin:0 auto 90px;
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(270px,1fr));
+      gap:26px;
+      padding:0 20px;
+    }
+    .card{
+      background:var(--card-bg);
+      box-shadow:var(--card-shadow);
+      border-radius:var(--radius);
+      padding:26px 24px 28px;
+      text-align:left;
+    }
+    .card h3{
+      margin:0 0 14px;
+      font-size:20px;
+    }
+    .card p{
+      margin:0;
+      color:var(--sub);
+      line-height:1.5;
+      font-size:15px;
+    }
+
+    footer{
+      text-align:center;
+      padding:32px 0 52px;
+      color:#9ca3af;
+      font-size:13px;
+    }
+
+    /* ===== Hide default Voiceflow launcher bubble ===== */
+    .vf-chat-launcher,
+    [data-cy="chat-launcher"],
+    [data-testid="launcher"],
+    div[id^="vf-launcher"]{
+      display:none !important;
+      visibility:hidden !important;
+      opacity:0 !important;
+    }
   </style>
 </head>
 <body>
 
-<header>
-  <h1>✨ Spiritual AI Companion</h1>
-  <p>Receive Gita wisdom, Yoga advice, and daily spiritual guidance — tailored to your mood.</p>
-</header>
+  <header>
+    <h1>✨ Spiritual AI Companion</h1>
+    <p>Receive Gita wisdom, Yoga advice, and daily spiritual guidance — tailored to your mood.</p>
+  </header>
 
-<main>
-  <div class="button-group">
-    <a href="#" id="chatBtn" class="button">Chat Now</a>
-    <a href="https://wa.me/34671653842?text=Hi%20Spiritual%20AI%2C%20please%20guide%20me" class="button" target="_blank" rel="noopener">WhatsApp</a>
-    <a href="https://t.me/YOUR_TELEGRAM_BOT" class="button" target="_blank" rel="noopener">Telegram</a>
+  <div class="cta-bar">
+    <!-- Chat button (we hook this to the Voiceflow API) -->
+    <a id="chatBtn" class="btn" href="#">Chat Now</a>
+    <!-- Update these links to real WhatsApp / Telegram bot later -->
+    <a class="btn" href="https://wa.me/34671653842" target="_blank" rel="noopener">WhatsApp</a>
+    <a class="btn" href="https://t.me/YOUR_TELEGRAM_BOT" target="_blank" rel="noopener">Telegram</a>
   </div>
 
   <section class="features">
-    <article class="card">
+    <div class="card">
       <h3>Daily Gita Wisdom</h3>
       <p>Get one shloka a day with meaning & reflection prompts to apply it in real life.</p>
-    </article>
-    <article class="card">
-      <h3>Mood-based Yoga Poses</h3>
+    </div>
+    <div class="card">
+      <h3>Mood‑based Yoga Poses</h3>
       <p>Feeling anxious or low? The bot suggests poses (with instructions) best suited to your state.</p>
-    </article>
-    <article class="card">
+    </div>
+    <div class="card">
       <h3>Habit Streak & Karma Points</h3>
       <p>Stay motivated with positive reinforcement, streak tracking, and a gentle gamified score.</p>
-    </article>
-    <article class="card">
-      <h3>Multi-channel Access</h3>
-      <p>Use the chatbot on the website, or jump to WhatsApp/Telegram for on-the-go support.</p>
-    </article>
+    </div>
+    <div class="card">
+      <h3>Multi‑channel Access</h3>
+      <p>Use the chatbot on the website, or jump to WhatsApp/Telegram for on‑the‑go support.</p>
+    </div>
   </section>
-</main>
 
-<footer>
-  © <span id="year"></span> Spiritual AI. All rights reserved.
-</footer>
+  <footer>
+    © 2025 Spiritual AI · All rights reserved
+  </footer>
 
-<!-- Voiceflow widget -->
-<script type="text/javascript">
-(function(d,t){
-  const s=d.createElement(t);
-  s.src="https://cdn.voiceflow.com/widget-next/bundle.mjs";
-  s.type="text/javascript";
-  s.async=true;
+  <!-- ===================== Voiceflow Widget Loader ===================== -->
+  <script>
+    // Store the Voiceflow API instance and readiness flag
+    let vfAPI = null;
 
-  let vfAPI=null;
-
-  s.onload=function(){
-    window.voiceflow.chat.load(
-      {
-        verify:{ projectID:"6872205abf484647c16ff114" },
-        url:"https://general-runtime.voiceflow.com",
-        versionID:"production",
-        voice:{ url:"https://runtime-api.voiceflow.com" }
-      },
-      {
-        theme:{
-          primary:"#334155",
-          fontFamily:"Poppins, Arial, sans-serif",
-          position:"right",
-          spacing:{ side:20, bottom:20 }
-        }
+    // Open / toggle helpers
+    function openChat(){
+      if (vfAPI) {
+        vfAPI.open();
+      } else {
+        // If user clicks before script loads, retry shortly
+        setTimeout(openChat, 400);
       }
-    ).then(api=>{
-      vfAPI=api;
-      try{ api.hideLauncher && api.hideLauncher(); }catch(e){}
-    }).catch(err=>console.error("VF load error:",err));
-  };
+    }
+    function toggleChat(){
+      if (!vfAPI){ setTimeout(toggleChat, 400); return; }
+      const isOpen = vfAPI.isOpen ? vfAPI.isOpen() : false;
+      if (isOpen && vfAPI.close) vfAPI.close();
+      else if (vfAPI.open) vfAPI.open();
+    }
 
-  d.body.appendChild(s);
+    // Attach to button
+    document.getElementById('chatBtn').addEventListener('click', function(e){
+      e.preventDefault();
+      openChat();
+    });
 
-  // Chat button handler
-  d.addEventListener("DOMContentLoaded",()=>{
-    const btn=d.getElementById("chatBtn");
-    const openChat=()=>{
-      if(vfAPI && vfAPI.open){ vfAPI.open(); }
-      else if(window.voiceflow?.chat?.open){ window.voiceflow.chat.open(); }
-      else{ setTimeout(openChat,300); }
-    };
-    btn.addEventListener("click",e=>{ e.preventDefault(); openChat(); });
-    d.getElementById("year").textContent=new Date().getFullYear();
-  });
-})(document,"script");
-</script>
+    // Dynamically inject the Voiceflow script
+    (function(d, t){
+      const s = d.createElement(t);
+      s.src  = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
+      s.type = "text/javascript";
+      s.async = true;
+      s.onload = function(){
+        // Load Voiceflow widget with config and custom theme
+        window.voiceflow.chat.load(
+          {
+            verify:   { projectID: '6872205abf484647c16ff114' },
+            url:      'https://general-runtime.voiceflow.com',
+            versionID:'production',
+            voice:    { url: 'https://runtime-api.voiceflow.com' }
+          },
+          {
+            // THEME OVERRIDES (you can remove this block to use dashboard settings)
+            theme: {
+              primary: '#334155',
+              radius: 14,
+              launcher: {
+                // We hide it anyway, but ensure false if available
+                show: false
+              },
+              chatWindow: {
+                width: 420,
+                rounded: true
+              }
+            }
+          }
+        ).then(api=>{
+          vfAPI = api;
+          // Hide the launcher programmatically if the API allows
+          if (api.hideLauncher) api.hideLauncher();
+        }).catch(err=>{
+          console.error('Voiceflow load error:', err);
+        });
+      };
+      d.body.appendChild(s);
+    })(document,'script');
+  </script>
+  <!-- =================== / Voiceflow widget end =================== -->
 
 </body>
 </html>
