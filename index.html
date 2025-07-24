@@ -89,59 +89,56 @@
   </main>
 
   <!-- Voiceflow Widget Loader -->
-  <script type="text/javascript">
-    (function(d, t){
-      const s = d.createElement(t);
-      const prior = d.getElementsByTagName(t)[0];
+<script type="text/javascript">
+  (function (d, t) {
+    // 1) Create loader script
+    const s = d.createElement(t);
+    s.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
+    s.type = "text/javascript";
+    s.async = true;
 
-      let vfAPI = null;
+    // 2) Expose a global that we can check later
+    window.vfAPI = null;
 
-      // Attach click listener early
-      d.addEventListener('DOMContentLoaded', () => {
-        const chatBtn = d.getElementById('chatBtn');
-        chatBtn.addEventListener('click', () => {
-          if (vfAPI && vfAPI.open) {
-            vfAPI.open();
-          } else {
-            // Try a bit later if widget is still loading
-            setTimeout(() => vfAPI && vfAPI.open && vfAPI.open(), 500);
+    // 3) When widget finishes loading, save the API & hide launcher
+    s.onload = function () {
+      window.voiceflow.chat.load(
+        {
+          verify: { projectID: "6872205abf484647c16ff114" },
+          url: "https://general-runtime.voiceflow.com",
+          versionID: "production",
+          voice: { url: "https://runtime-api.voiceflow.com" }
+        },
+        {
+          theme: {
+            primary: "#334155",
+            fontFamily: "Arial, sans-serif"
           }
-        });
+        }
+      ).then(api => {
+        window.vfAPI = api;
+        // Hide default launcher if it shows up
+        try { api.hideLauncher && api.hideLauncher(); } catch (e) {}
       });
+    };
 
-      s.onload = function(){
-        window.voiceflow.chat.load(
-          {
-            verify: { projectID: '6872205abf484647c16ff114' },
-            url: 'https://general-runtime.voiceflow.com',
-            versionID: 'production',
-            voice: { url: 'https://runtime-api.voiceflow.com' }
-          },
-          {
-            theme: {
-              primary: '#334155',
-              fontFamily: 'Arial, sans-serif'
-            }
-          }
-        ).then(api => {
-          vfAPI = api;
+    d.body.appendChild(s);
 
-          // Hide default launcher if exposed
-          try { api.hideLauncher && api.hideLauncher(); } catch(e){}
+    // 4) Button click handler that retries until widget is ready
+    function openChat() {
+      if (window.vfAPI && window.vfAPI.open) {
+        window.vfAPI.open();
+      } else {
+        // retry shortly (widget still initializing)
+        setTimeout(openChat, 200);
+      }
+    }
 
-          // Extra DOM hide (in case)
-          setTimeout(() => {
-            const debugBtn = document.querySelector('[data-testid="launcher"]') ||
-                             document.querySelector('.vf-chat-launcher');
-            if (debugBtn) debugBtn.style.display = 'none';
-          }, 1000);
-        });
-      };
-
-      s.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
-      s.type = "text/javascript";
-      prior.parentNode.insertBefore(s, prior);
-    })(document, 'script');
+    d.addEventListener("DOMContentLoaded", () => {
+      const btn = d.getElementById("chatBtn");
+      if (btn) btn.addEventListener("click", openChat);
+    });
+  })(document, "script");
   </script>
 </body>
 </html>
