@@ -4,59 +4,72 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Spiritual AI Companion</title>
-  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/onkartech23/spiritual-ai-site/main/favicon.png"/>
+  <link rel="icon" href="favicon.ico" />
   <style>
     body {
+      margin: 0;
       font-family: Arial, sans-serif;
       background: #f5f6f7;
-      margin: 0;
-      padding: 0;
-      text-align: center;
     }
     header {
-      background: #1d2b36;
+      background: #1d2939;
+      padding: 1em;
       color: white;
-      padding: 20px 10px;
+      text-align: center;
     }
-    h1 {
-      margin: 0;
-      font-size: 2em;
+    .container {
+      text-align: center;
+      margin-top: 40px;
     }
-    .description {
-      font-size: 1em;
-      margin: 0;
-    }
-    .buttons {
-      margin: 40px auto;
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-    .btn {
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
       background: #2d3e50;
       color: white;
-      padding: 12px 20px;
-      text-decoration: none;
+      border: none;
       border-radius: 8px;
-      font-size: 1rem;
-      transition: 0.3s;
+      cursor: pointer;
     }
-    .btn:hover {
-      background: #4e6a82;
+    button:hover {
+      background: #405166;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>✨ Spiritual AI Companion</h1>
-    <p class="description">Receive Gita wisdom, Yoga advice, and daily spiritual guidance</p>
-  </header>
 
-  <div class="buttons">
-    <a href="https://chat.voiceflow.com/?projectID=6872205abf484647c16ff114" target="_blank" class="btn">Chat Now</a>
-    <a href="https://wa.me/34671653842" target="_blank" class="btn">WhatsApp</a>
-    <a href="https://t.me/YOUR_BOT_USERNAME" target="_blank" class="btn">Telegram</a>
-  </div>
+<header>
+  <h1>✨ Spiritual AI Companion</h1>
+  <p>Receive Gita wisdom, Yoga advice, and daily spiritual guidance</p>
+</header>
+
+<div class="container">
+  <button onclick="openChat()">Chat Now</button>
+  <button onclick="window.open('https://wa.me/34671653842', '_blank')">WhatsApp</button>
+  <button onclick="alert('Telegram bot setup coming soon')">Telegram</button>
+</div>
+
+<script>
+  function openChat() {
+    // Nothing needed here – widget loads below
+  }
+
+  // Inject Voiceflow widget
+  (function(d, t) {
+    var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
+    v.onload = function() {
+      window.voiceflow.chat.load({
+        verify: { projectID: '6872205abf484647c16ff114' },
+        url: 'https://general-runtime.voiceflow.com',
+        versionID: 'production',
+        voice: { url: 'https://runtime-api.voiceflow.com' }
+      });
+    };
+    v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
+    v.type = "text/javascript";
+    s.parentNode.insertBefore(v, s);
+  })(document, 'script');
+</script>
+
 </body>
 </html>
