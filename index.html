@@ -4,83 +4,125 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Spiritual AI Companion</title>
+  <link rel="icon" href="favicon.png" />
 
   <style>
     body{
       margin:0;
-      font-family:Arial, sans-serif;
-      background:#f4f5f7;
-      text-align:center;
+      font-family: Arial, Helvetica, sans-serif;
+      background:#f3f4f6;
+      color:#111827;
     }
     header{
       background:#1f2937;
       color:#fff;
-      padding:30px 0 10px;
+      padding:24px 16px 28px;
+      text-align:center;
     }
-    h1{ margin:0; font-size:2rem; }
-    p{ margin:6px 0 0; color:#cbd5e1; }
-
-    .button-group{ margin:40px 0; }
-    .button{
-      display:inline-block;
-      margin:10px;
-      padding:12px 25px;
+    header h1{
+      margin:0;
+      font-size:32px;
+      line-height:1.2;
+    }
+    header p{
+      margin:8px 0 0;
+      font-size:16px;
+      opacity:.9;
+    }
+    main{
+      max-width:960px;
+      margin:40px auto 120px;
+      padding:0 16px;
+      text-align:center;
+    }
+    .btn-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:18px;
+      justify-content:center;
+      margin-top:24px;
+    }
+    .btn{
       background:#334155;
       color:#fff;
+      padding:12px 26px;
+      border-radius:10px;
       border:none;
-      border-radius:8px;
       font-size:16px;
-      text-decoration:none;
       cursor:pointer;
-      transition:background .2s;
+      text-decoration:none;
+      display:inline-block;
+      transition:opacity .2s;
     }
-    .button:hover{ background:#475569; }
+    .btn:hover{opacity:.85;}
+
+    /* Hide Voiceflow default launcher bubble & footer */
+    .vf-chat-launcher,
+    [data-cy="chat-launcher"]{
+      display:none !important;
+    }
+    .vf-footer__powered-by{
+      display:none !important;
+    }
   </style>
 </head>
-<body>
 
+<body>
   <header>
     <h1>✨ Spiritual AI Companion</h1>
     <p>Receive Gita wisdom, Yoga advice, and daily spiritual guidance</p>
   </header>
 
-  <div class="button-group">
-    <a href="#" class="button" onclick="openBot()">Chat Now</a>
-    <a href="https://wa.me/34671653842" class="button" target="_blank">WhatsApp</a>
-    <a href="https://t.me/YOUR_TELEGRAM_BOT" class="button" target="_blank">Telegram</a>
-  </div>
+  <main>
+    <div class="btn-row">
+      <button class="btn" id="chatBtn">Chat Now</button>
+      <a class="btn" href="https://wa.me/34671653842?text=Hi%20Spiritual%20AI%2C%20I%20need%20guidance" target="_blank" rel="noopener">WhatsApp</a>
+      <a class="btn" href="https://t.me/YOUR_BOT_USERNAME" target="_blank" rel="noopener">Telegram</a>
+    </div>
+  </main>
 
-  <!-- =====================  Voiceflow widget  ===================== -->
-  <!-- Add code before closing </body> tag -->
+  <!-- Voiceflow Widget Loader -->
   <script type="text/javascript">
-    // small helper so the button can open the widget once it's ready
-    let vfReady = false;
+    let vfAPI = null;
+
     function openBot(){
-      if (vfReady && window.voiceflow && window.voiceflow.chat) {
-        window.voiceflow.chat.open();
+      if (vfAPI && vfAPI.open){
+        vfAPI.open();
       } else {
-        // In case user clicks fast, wait a bit then try again
-        setTimeout(openBot, 500);
+        setTimeout(openBot, 300);
       }
     }
 
-    (function(d, t) {
+    document.addEventListener('DOMContentLoaded', () => {
+      const chatBtn = document.getElementById('chatBtn');
+      chatBtn.addEventListener('click', openBot);
+    });
+
+    (function(d, t){
       var v = d.createElement(t), s = d.getElementsByTagName(t)[0];
-      v.onload = function() {
-        window.voiceflow.chat.load({
-          verify: { projectID: '6872205abf484647c16ff114' },
-          url: 'https://general-runtime.voiceflow.com',
-          versionID: 'production',
-          voice: { url: 'https://runtime-api.voiceflow.com' }
+      v.onload = function(){
+        window.voiceflow.chat.load(
+          {
+            verify: { projectID: '6872205abf484647c16ff114' },
+            url: 'https://general-runtime.voiceflow.com',
+            versionID: 'production',
+            voice: { url: 'https://runtime-api.voiceflow.com' }
+          },
+          {
+            theme: {
+              primary: '#334155',
+              fontFamily: 'Arial, sans-serif'
+            }
+          }
+        ).then(api => {
+          vfAPI = api;
+          if (api.hideLauncher) api.hideLauncher();
         });
-        vfReady = true;
       };
-      v.src  = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
+      v.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
       v.type = "text/javascript";
       s.parentNode.insertBefore(v, s);
     })(document, 'script');
   </script>
-  <!-- =================== / Voiceflow widget end =================== -->
-
 </body>
 </html>
