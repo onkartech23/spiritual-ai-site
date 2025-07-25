@@ -1,176 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Spiritual AI Companion</title>
-
-  <!-- If you add your own favicon, uncomment this line and point to the file
-  <link rel="icon" href="favicon.ico" />
-  -->
-
-  <style>
-    :root{
-      --bg:#f4f5f7;
-      --primary:#1f2937;
-      --accent:#334155;
-      --accent-hover:#475569;
-      --card-bg:#fff;
-      --text:#111827;
-      --muted:#6b7280;
-      --radius:12px;
-      --shadow:0 8px 24px rgba(0,0,0,.08);
-      --maxw:1180px;
-    }
-    *{box-sizing:border-box;}
-    body{
-      margin:0;
-      background:var(--bg);
-      color:var(--text);
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,sans-serif;
-      -webkit-font-smoothing:antialiased;
-    }
-    header{
-      background:var(--primary);
-      color:#fff;
-      padding:32px 16px 18px;
-      text-align:center;
-      box-shadow:0 2px 6px rgba(0,0,0,.12);
-    }
-    header h1{margin:0;font-size:2.3rem;line-height:1.15;}
-    header p{margin:10px 0 0;color:#d1d5db;font-size:1rem;}
-
-    .hero-buttons{
-      margin:32px auto;
-      display:flex;
-      justify-content:center;
-      flex-wrap:wrap;
-      gap:18px;
-      max-width:var(--maxw);
-    }
-    .btn{
-      background:var(--accent);
-      color:#fff;
-      padding:12px 32px;
-      border:none;
-      border-radius:10px;
-      font-size:1rem;
-      cursor:pointer;
-      transition:background .2s ease;
-      text-decoration:none;
-      display:inline-block;
-    }
-    .btn:hover{ background:var(--accent-hover); }
-
-    .grid{
-      max-width:var(--maxw);
-      margin:0 auto 80px;
-      padding:0 16px;
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-      gap:28px;
-    }
-    .card{
-      background:var(--card-bg);
-      border-radius:var(--radius);
-      padding:28px 26px 32px;
-      box-shadow:var(--shadow);
-    }
-    .card h3{margin:0 0 14px;font-size:1.25rem;}
-    .card p{margin:0;color:var(--muted);line-height:1.45;font-size:.95rem;}
-
-    footer{
-      text-align:center;
-      padding:30px 10px 60px;
-      color:#9ca3af;
-      font-size:.8rem;
-    }
-
-    /* Make sure any Voiceflow launcher that slips through is hidden */
-    #vf-launcher,
-    [data-testid="launcher"],
-    button.vfrc-button,
-    div.vfrc-launcher{
-      display:none !important;
-      visibility:hidden !important;
-      opacity:0 !important;
-    }
-  </style>
-</head>
-<body>
-
-<header>
-  <h1>✨ Spiritual AI Companion</h1>
-  <p>Receive Gita wisdom, Yoga advice, and daily spiritual guidance — tailored to your mood.</p>
-</header>
-
-<section class="hero-buttons">
-  <a id="chatBtn" class="btn" href="#">Chat Now</a>
-  <a class="btn" target="_blank" rel="noopener" href="https://wa.me/34671653842">WhatsApp</a>
-  <a class="btn" target="_blank" rel="noopener" href="https://t.me/YOUR_TELEGRAM_BOT">Telegram</a>
-</section>
-
-<section class="grid">
-  <div class="card">
-    <h3>Daily Gita Wisdom</h3>
-    <p>Get one shloka a day with meaning & reflection prompts to apply it in real life.</p>
-  </div>
-
-  <div class="card">
-    <h3>Mood-based Yoga Poses</h3>
-    <p>Feeling anxious or low? The bot suggests poses (with instructions) best suited to your state.</p>
-  </div>
-
-  <div class="card">
-    <h3>Habit Streak & Karma Points</h3>
-    <p>Stay motivated with positive reinforcement, streak tracking, and a gentle gamified score.</p>
-  </div>
-
-  <div class="card">
-    <h3>Multi-channel Access</h3>
-    <p>Use the chatbot on the website, or jump to WhatsApp/Telegram for on-the-go support.</p>
-  </div>
-</section>
-
-<footer>
-  © <span id="year"></span> Spiritual AI. All rights reserved.
-</footer>
-
-<!-- ===================== Voiceflow widget loader ===================== -->
 <script type="text/javascript">
-  let vfReady = false;
-  let vfAPI   = null;
-
+  let vfReady=false, vfAPI=null;
   function openBot(){
-    if (vfReady && vfAPI) {
-      vfAPI.open();
-    } else {
-      setTimeout(openBot, 350);
-    }
+    if(vfReady && vfAPI){ vfAPI.open(); } else { setTimeout(openBot,300); }
   }
-
-  document.getElementById('chatBtn').addEventListener('click', function(e){
-    e.preventDefault();
-    openBot();
-  });
+  document.getElementById('chatBtn').addEventListener('click', e => { e.preventDefault(); openBot(); });
 
   (function(d,t){
     const v=d.createElement(t), s=d.getElementsByTagName(t)[0];
     v.onload=function(){
       window.voiceflow.chat.load({
-        verify:    { projectID: '6872205abf484647c16ff114' },
-        url:       'https://general-runtime.voiceflow.com',
-        versionID: 'production',
-        voice:     { url: 'https://runtime-api.voiceflow.com' }
+        verify:{ projectID:'6872205abf484647c16ff114' },
+        url:'https://general-runtime.voiceflow.com',
+        versionID:'production',
+        voice:{ url:'https://runtime-api.voiceflow.com' }
       });
-
-      // Poll for API, then hide launcher
-      const timer = setInterval(()=>{
-        const api = window.voiceflow && window.voiceflow.chat;
+      const timer=setInterval(()=>{
+        const api=window.voiceflow && window.voiceflow.chat;
         if(api && api.open){
           clearInterval(timer);
-          vfAPI   = api;
-          vfReady = true;
+          vfAPI=api; vfReady=true;
           removeVFLauncher();
         }
       },200);
@@ -180,28 +28,10 @@
     s.parentNode.insertBefore(v,s);
   })(document,'script');
 
-  // Remove "Test your agent" bubble whenever it appears
   function removeVFLauncher(){
-    const kill = () => {
-      const selectors = [
-        '#vf-launcher',
-        '[data-testid="launcher"]',
-        'button.vfrc-button',
-        'div.vfrc-launcher'
-      ];
-      selectors.forEach(sel=>{
-        document.querySelectorAll(sel).forEach(el=>el.remove());
-      });
-    };
+    const selectors=['#vf-launcher','[data-testid="launcher"]','button.vfrc-button','.vfrc-launcher'];
+    const kill=()=>selectors.forEach(sel=>document.querySelectorAll(sel).forEach(el=>el.remove()));
     kill();
-
-    const obs = new MutationObserver(kill);
-    obs.observe(document.body,{childList:true,subtree:true});
+    new MutationObserver(kill).observe(document.body,{childList:true,subtree:true});
   }
-
-  document.getElementById('year').textContent = new Date().getFullYear();
 </script>
-<!-- =================== /Voiceflow widget loader V1=================== -->
-
-</body>
-</html>
