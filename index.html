@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Spiritual AI Companion</title>
 
-  <!-- Remove or replace if you don't have favicon.ico -->
-  <!-- <link rel="icon" href="favicon.ico" /> -->
+  <!-- If you add your own favicon, uncomment this line and point to the file
+  <link rel="icon" href="favicon.ico" />
+  -->
 
   <style>
     :root{
@@ -20,7 +21,6 @@
       --radius:12px;
       --shadow:0 8px 24px rgba(0,0,0,.08);
       --maxw:1180px;
-      font-size:16px;
     }
     *{box-sizing:border-box;}
     body{
@@ -29,7 +29,6 @@
       color:var(--text);
       font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,sans-serif;
       -webkit-font-smoothing:antialiased;
-      text-rendering:optimizeLegibility;
     }
     header{
       background:var(--primary);
@@ -38,16 +37,8 @@
       text-align:center;
       box-shadow:0 2px 6px rgba(0,0,0,.12);
     }
-    header h1{
-      margin:0;
-      font-size:2.3rem;
-      line-height:1.15;
-    }
-    header p{
-      margin:10px 0 0;
-      color:#d1d5db;
-      font-size:1rem;
-    }
+    header h1{margin:0;font-size:2.3rem;line-height:1.15;}
+    header p{margin:10px 0 0;color:#d1d5db;font-size:1rem;}
 
     .hero-buttons{
       margin:32px auto;
@@ -84,18 +75,9 @@
       border-radius:var(--radius);
       padding:28px 26px 32px;
       box-shadow:var(--shadow);
-      text-align:left;
     }
-    .card h3{
-      margin:0 0 14px;
-      font-size:1.25rem;
-    }
-    .card p{
-      margin:0;
-      color:var(--muted);
-      line-height:1.45;
-      font-size:.95rem;
-    }
+    .card h3{margin:0 0 14px;font-size:1.25rem;}
+    .card p{margin:0;color:var(--muted);line-height:1.45;font-size:.95rem;}
 
     footer{
       text-align:center;
@@ -104,8 +86,15 @@
       font-size:.8rem;
     }
 
-    /* Try to hide launchers if they leak into DOM */
-    .vf-launcher,[data-testid="launcher"]{ display:none !important; }
+    /* Make sure any Voiceflow launcher that slips through is hidden */
+    #vf-launcher,
+    [data-testid="launcher"],
+    button.vfrc-button,
+    div.vfrc-launcher{
+      display:none !important;
+      visibility:hidden !important;
+      opacity:0 !important;
+    }
   </style>
 </head>
 <body>
@@ -147,17 +136,16 @@
   © <span id="year"></span> Spiritual AI. All rights reserved.
 </footer>
 
-<!-- ===================== Voiceflow Widget ===================== -->
+<!-- ===================== Voiceflow widget loader ===================== -->
 <script type="text/javascript">
-  // Globals to control the widget
-  window._vfReady = false;
-  window._vfAPI   = null;
+  let vfReady = false;
+  let vfAPI   = null;
 
   function openBot(){
-    if (window._vfReady && window._vfAPI) {
-      window._vfAPI.open();
+    if (vfReady && vfAPI) {
+      vfAPI.open();
     } else {
-      setTimeout(openBot, 400);
+      setTimeout(openBot, 350);
     }
   }
 
@@ -176,13 +164,14 @@
         voice:     { url: 'https://runtime-api.voiceflow.com' }
       });
 
-      const waitForAPI=setInterval(()=>{
-        const vf=window.voiceflow && window.voiceflow.chat;
-        if(vf && vf.open){
-          clearInterval(waitForAPI);
-          window._vfAPI = vf;
-          window._vfReady = true;
-          hideLauncher(); // ensure hidden once API is ready
+      // Poll for API, then hide launcher
+      const timer = setInterval(()=>{
+        const api = window.voiceflow && window.voiceflow.chat;
+        if(api && api.open){
+          clearInterval(timer);
+          vfAPI   = api;
+          vfReady = true;
+          removeVFLauncher();
         }
       },200);
     };
@@ -191,25 +180,28 @@
     s.parentNode.insertBefore(v,s);
   })(document,'script');
 
-  // Hide "Test your agent" bubble robustly (DOM & shadow DOM)
-  function hideLauncher(){
-    // Attempt to kill any existing launcher
-    try{
-      document.querySelectorAll('[data-testid="launcher"], .vf-launcher').forEach(el=>el.remove());
-    }catch(e){}
+  // Remove "Test your agent" bubble whenever it appears
+  function removeVFLauncher(){
+    const kill = () => {
+      const selectors = [
+        '#vf-launcher',
+        '[data-testid="launcher"]',
+        'button.vfrc-button',
+        'div.vfrc-launcher'
+      ];
+      selectors.forEach(sel=>{
+        document.querySelectorAll(sel).forEach(el=>el.remove());
+      });
+    };
+    kill();
 
-    // Observe future DOM changes to re-hide it if Voiceflow reinjects
-    const obs = new MutationObserver(()=> {
-      const l = document.querySelector('[data-testid="launcher"], .vf-launcher');
-      if(l) l.remove();
-    });
+    const obs = new MutationObserver(kill);
     obs.observe(document.body,{childList:true,subtree:true});
   }
 
-  // year in footer
   document.getElementById('year').textContent = new Date().getFullYear();
 </script>
-<!-- =================== /Voiceflow Widget =================== -->
+<!-- =================== /Voiceflow widget loader V1=================== -->
 
 </body>
 </html>
